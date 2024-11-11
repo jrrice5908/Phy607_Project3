@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcmc_sim"
+version = "0.0.1"
+dependencies = [
+   "numpy",
+   "matplotlib",
+]
+authors = [
+  { name="Luis Rufino", email="bmaves@gmail.com" },
+  { name="Julia Rice", email="jrrice@syr.edu" },
+]
+description = "Package for Project 3"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+license = {file = "LICENSE"}
+
+[project.scripts]
+run_mc_sim = "PHY607_Project3:main.sh"
