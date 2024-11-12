@@ -11,10 +11,18 @@ class System:
     - particles (list):list of all particles contained in box.
     '''
     
-    def __init__(self, length):             
+    def __init__(self, length, part_num):             
         self.length = length
         self.area = length ** 2
+	self.part_num = part_num
         self.particles = []
+	for part in range(self.part_num):
+		part_i = Particle(
+			np.random.uniform(0,length,2),
+			np.random.uniform(0, 0.5),
+			np.random.uniform(0,2 * np.pi))
+		self.particles.append(part_i)
+		
         
     def add_particle(self, particle):               #System.add_particle, adds particle to class list
         #Add a particle to the simulation box

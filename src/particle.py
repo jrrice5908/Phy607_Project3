@@ -1,7 +1,7 @@
 import numpy as np
 from .system import System
 
-class Particle():
+class Particle:
     '''
     This defines how the particles in the systen behave. 
     
