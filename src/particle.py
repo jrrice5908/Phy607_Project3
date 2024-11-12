@@ -1,7 +1,7 @@
 import numpy as np
 from .system import System
 
-class Particle:
+class Particle():
     '''
     This defines how the particles in the systen behave. 
     
@@ -17,8 +17,8 @@ class Particle:
         self.speed = np.array(speed)
         self.orientation = orientation
         
-    def find_distance(p1, p2):
-        delta = np.abs(p1 - p2)
+    def find_distance(self, other):
+        delta = np.abs(self - other)
         delta = np.where(delta > L / 2, L - delta, delta)
         return np.sqrt((delta ** 2).sum(axis=-1))
     
