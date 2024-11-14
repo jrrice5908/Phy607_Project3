@@ -14,62 +14,66 @@ class Particle:
 	- orientation: angle of particles alignment
 	'''
 
-	def __init__(self, position, speed, orientation):
+	def __init__(self, position, orientation, speed):
 		self.position = np.array(position)
 		self.speed = np.array(speed)
 		self.orientation = orientation
 		self.local_density_list = []
 		self.particle_energy_list = []
-	
+		self.new_pos = np.zeros(2)
+		self.new_orientation = np.zeros(1)
         
 	def find_distance(self, other):
-		delta = np.abs(self - other)
-		delta = np.where(delta > L / 2, L - delta, delta)
-		return np.sqrt((delta ** 2).sum(axis=-1))
+		delta = np.sqrt((self.position[0] - other.position[0])**2+ (self.position[1] - other.position[1])**2)
+		return delta
+
+	def find_new_distance(self, other):
+		delta = np.sqrt((self.new_pos[0] - other.new_pos[0])**2+ (self.new_pos[1] - other.new_pos[1])**2)
+		return delta
+
+#	def local_density(self):
+#		distances = distance(positions[idx], positions)
+#		neighbors = distances < density_radius
+#		return np.sum(neighbors) - 1  # exclude the rod itself
     
-	def local_density(self):
-		distances = distance(positions[idx], positions)
-		neighbors = distances < density_radius
-		return np.sum(neighbors) - 1  # exclude the rod itself
+#	def update_alignment(rod_orientation, mean_theta):
+#		#Aligning each particle to either mean_theta or 180 apart
+#		# Calculate the angular difference
+#		angle_diff = (mean_theta - rod_orientation + np.pi) % (2 * np.pi) - np.pi
+#		if np.abs(angle_diff) <= np.pi / 2:
+#			# Align directly to mean_theta if it's within 90 degrees
+#			return mean_theta
+#		else:
+#			# Otherwise, align 180 degrees away
+#			return (mean_theta + np.pi) % (2 * np.pi)
+ #       
+#	def mean_orientation(idx):
+#		"""Compute mean orientation of neighbors within density radius."""
+#		distances = distance(positions[idx], positions)
+#		neighbors = distances < density_radius
+#		if np.sum(neighbors) > 1:
+#			return np.arctan2(
+#				np.sin(orientations[neighbors]).mean(),
+#				np.cos(orientations[neighbors]).mean()
+#			)
+#		return orientations[idx]
     
-	def update_alignment(rod_orientation, mean_theta):
-		#Aligning each particle to either mean_theta or 180 apart
-		# Calculate the angular difference
-		angle_diff = (mean_theta - rod_orientation + np.pi) % (2 * np.pi) - np.pi
-		if np.abs(angle_diff) <= np.pi / 2:
-			# Align directly to mean_theta if it's within 90 degrees
-			return mean_theta
-		else:
-			# Otherwise, align 180 degrees away
-			return (mean_theta + np.pi) % (2 * np.pi)
-        
-	def mean_orientation(idx):
-		"""Compute mean orientation of neighbors within density radius."""
-		distances = distance(positions[idx], positions)
-		neighbors = distances < density_radius
-		if np.sum(neighbors) > 1:
-			return np.arctan2(
-				np.sin(orientations[neighbors]).mean(),
-				np.cos(orientations[neighbors]).mean()
-			)
-		return orientations[idx]
-    
-def attraction_force(idx):
-	"""Compute the attractive force vector on a rod given by index `idx`."""
-	distances = distance(positions[idx], positions)
-	neighbors = (distances < attraction_radius) & (distances > 0)
-    
-	if np.sum(neighbors) > 0:
-		# Calculate the displacement vectors toward each neighbor within attraction radius
-		displacement_vectors = positions[neighbors] - positions[idx]
-        
-		# Apply periodic boundary adjustments to the displacement vectors
-		displacement_vectors = np.where(displacement_vectors > L / 2, displacement_vectors - L, displacement_vectors)
-		displacement_vectors = np.where(displacement_vectors < -L / 2, displacement_vectors + L, displacement_vectors)
-        
-		# Calculate the mean attraction vector
-		attraction_vector = displacement_vectors.mean(axis=0)
-        
-		# Scale by attraction strength
-		return attraction_strength * attraction_vector
-	return np.array([0.0, 0.0])
+#def attraction_force(idx):
+#	"""Compute the attractive force vector on a rod given by index `idx`."""
+#	distances = distance(positions[idx], positions)
+#	neighbors = (distances < attraction_radius) & (distances > 0)
+ #   
+#	if np.sum(neighbors) > 0:
+#		# Calculate the displacement vectors toward each neighbor within attraction radius
+#		displacement_vectors = positions[neighbors] - positions[idx]
+ #       
+#		# Apply periodic boundary adjustments to the displacement vectors
+#		displacement_vectors = np.where(displacement_vectors > L / 2, displacement_vectors - L, displacement_vectors)
+#		displacement_vectors = np.where(displacement_vectors < -L / 2, displacement_vectors + L, displacement_vectors)
+ #       
+#		# Calculate the mean attraction vector
+#		attraction_vector = displacement_vectors.mean(axis=0)
+ #       
+#		# Scale by attraction strength
+#		return attraction_strength * attraction_vector
+#	return np.array([0.0, 0.0])
