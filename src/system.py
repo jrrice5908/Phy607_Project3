@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-#from .particle import Particle
 import particle as pp
+
 class System:
 	'''
 	This defines the box/boundary in which we are simulating. 
@@ -9,7 +9,9 @@ class System:
 	Parameters:
 	-----------
 	- length (float): length of one side of the square box.
-	- particles (list):list of all particles contained in box.
+	- particles (list): list of all particles contained in box.
+	- part_num = (integer) number of particles
+	- temp = (float) temperature of system
 	'''
 	
 	def __init__(self, length, part_num, temp):             
@@ -24,6 +26,7 @@ class System:
 				np.random.uniform(0, 0.5))
 			self.particles.append(part_i)
 		self.temp = temp
+
 	def local_denisty_list(self):
 		self.local_density_list = []
 		for particle in self.particles:
@@ -76,9 +79,7 @@ class System:
 				part.new_orientation = (part.orientation + delta_orientation) % (2 * np.pi)
 			
 			if np.random.rand() < 0.1:
-				part.new_orientation = (part.new_orientation + np.pi) % (2 * np.pi)
-		
-				
+				part.new_orientation = (part.new_orientation + np.pi) % (2 * np.pi)				
 	
 	def mcmc_step(self):
 		self.mcmc_proposal()
@@ -92,6 +93,7 @@ class System:
 				i.orientation = i.new_orientation
 		else:
 			print("nah fam")
+
 	def plot_system(self):
 		plt.figure(figsize= (6,6))
 		plt.xlim(0,self.length)
