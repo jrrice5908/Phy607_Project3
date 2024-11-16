@@ -25,7 +25,8 @@ class Particle:
 		self.particle_energy_list = []
 		self.new_pos = np.zeros(2)
 		self.new_orientation = np.zeros(1)
-        
+		self.position_list = [self.position]
+		self.orientation_list = [self.orientation]        
 	def find_distance(self, other):
 		delta = np.sqrt((self.position[0] - other.position[0])**2+ (self.position[1] - other.position[1])**2)
 		return delta

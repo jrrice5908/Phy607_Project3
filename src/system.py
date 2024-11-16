@@ -49,6 +49,9 @@ class System:
 			self.mean_orientation_list.append(np.mean(part_or_list))
 				
 	def compute_energy(self, alpha = 1, beta = 25):
+		"""
+		COmpute energy at current step
+		"""
 		self.total_energy = 0
 		for i in self.particles:
 			for j in self.particles:
@@ -59,6 +62,9 @@ class System:
 		return self.total_energy
 
 	def compute_new_energy(self, alpha = 1, beta = 25):
+		"""
+		Compute energy of proposed system
+		"""
 		self.new_total_energy = 0
 		for i in self.particles:
 			for j in self.particles:
@@ -68,7 +74,10 @@ class System:
 				self.new_total_energy += pair_energy / 2
 		return self.new_total_energy
 
-	def mcmc_proposal(self, position_step=0.5, orientation_step=0.5):
+	def mcmc_proposal(self, position_step=.5, orientation_step=.5):
+		"""
+		proposed step for each particle position and orientation
+		"""
 		prior_energy = self.compute_energy()
 		for part in self.particles:
 			if np.random.rand() < 1:
@@ -78,10 +87,14 @@ class System:
 				delta_orientation = orientation_step * (np.random.rand() -0.5)
 				part.new_orientation = (part.orientation + delta_orientation) % (2 * np.pi)
 			
-			if np.random.rand() < 0.1:
+			if np.random.rand() < 0.0:
 				part.new_orientation = (part.new_orientation + np.pi) % (2 * np.pi)				
 	
-	def mcmc_step(self):
+	def metropolis_step(self):
+		"""
+		Taking one Metropolis Hastings step
+		Use prposed energy to determine whether to take step
+		"""
 		self.mcmc_proposal()
 		prior_energy = self.compute_energy()
 		prop_energy = self.compute_new_energy()
@@ -91,10 +104,37 @@ class System:
 			for i in self.particles:
 				i.position = i.new_pos
 				i.orientation = i.new_orientation
+				i.orientation_list.append(i.new_orientation)
+				i.position_list.append(i.new_pos)
+			return True
 		else:
 			print("nah fam")
+			return False
+
+	def run_mcmc(self, iterations, burn_in_fraction =0.2):
+		
+		burn_in = int(iterations * burn_in_fraction)
+		acceptance = 0
+		E_list = []
+		
+		part_list = []
+		
+		for i in range(iterations):
+			if self.metropolis_step():
+				acceptance += 1
+			E_list.append(self.total_energy)
+			part_list.append(self.particles)
+		if i >= burn_in:
+			pass
+			#part_list.append(self.particles)
+		return E_list, part_list
+					
+			
 
 	def plot_system(self):
+		"""
+		Plotting system of N particles
+		"""
 		plt.figure(figsize= (6,6))
 		plt.xlim(0,self.length)
 		plt.ylim(0, self.length)
@@ -112,13 +152,28 @@ class System:
 		plt.show()
 			
 system = System(10, 100,0.1)
-system.plot_system()
-for i in range(1000):
-	#system.plot_system()
-	system.mcmc_step()
-	print(system.total_energy)
-system.plot_system()
+#system.plot_system()
+E, p = system.run_mcmc(10000)
+#system.plot_system()
+#print(E,p)
+xpos = []
+ypos = []
+orient =[]
 
+plt.plot(system.particles[0].position_list)
+plt.plot(system.particles[0].orientation_list)
+plt.show()
+#print(p)
+#for i in p:
+#	print(i)
+#	xpos.append(i.new_pos[0])
+#	ypos.append(i.new_pos[1])
+#	orient.append(i.new_orientation)
+#plt.plot(xpos)
+#plt.show()
+#print(xpos)	
+#plt.plot(E)
+#plt.show()
 
 
             
