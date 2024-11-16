@@ -87,12 +87,13 @@ class System:
 		prop_energy = self.compute_new_energy()
 		delta_e = prop_energy - prior_energy
 		if delta_e < 0 or np.random.rand() < np.exp(-delta_e/ self.temp):
-			print("yes")
+			#print("yes")
 			for i in self.particles:
 				i.position = i.new_pos
 				i.orientation = i.new_orientation
 		else:
-			print("nah fam")
+			pass
+#			print("nah fam")
 
 	def plot_system(self):
 		plt.figure(figsize= (6,6))
