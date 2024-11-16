@@ -111,14 +111,27 @@ class System:
 		plt.gca().set_aspect('equal', adjustable = 'box')
 		plt.show()
 			
+burn_in_steps = 100  # burn-in period
+sampled_energies = []  # Store energies after burn-in                   
+
 system = System(10, 100,0.1)
 system.plot_system()
-for i in range(1000):
-	#system.plot_system()
-	system.mcmc_step()
-	print(system.total_energy)
+
+
+for step in range(500):
+        system.mcmc_step()
+        if step < burn_in_steps:
+                #print(f"Burn-in step {step + 1}/{burn_in_steps} - Energy: {system.total_energy}")
+                pass
+        else:
+                #print(f"Sampling step {step - burn_in_steps + 1} - Energy: {system.total_energy}")
+                sampled_energies.append(system.total_energy)
+
 system.plot_system()
 
-
-
+plt.plot(sampled_energies)
+plt.xlabel("Sampling Step")
+plt.ylabel("Total Energy")
+plt.title("Energy After Burn-In")
+plt.show()
             
