@@ -129,7 +129,7 @@ class System:
 			#part_list.append(self.particles)
 		return E_list, part_list
 					
-			
+
 
 	def plot_system(self):
 		"""
@@ -151,11 +151,13 @@ class System:
 		plt.gca().set_aspect('equal', adjustable = 'box')
 		plt.show()
 			
+burn_in_steps = 100  # burn-in period
+sampled_energies = []  # Store energies after burn-in                   
+
 system = System(10, 100,0.1)
 #system.plot_system()
-E, p = system.run_mcmc(10000)
-#system.plot_system()
-#print(E,p)
+E, p = system.run_mcmc(100)
+
 xpos = []
 ypos = []
 orient =[]
@@ -163,17 +165,27 @@ orient =[]
 plt.plot(system.particles[0].position_list)
 plt.plot(system.particles[0].orientation_list)
 plt.show()
-#print(p)
-#for i in p:
-#	print(i)
-#	xpos.append(i.new_pos[0])
-#	ypos.append(i.new_pos[1])
-#	orient.append(i.new_orientation)
-#plt.plot(xpos)
-#plt.show()
-#print(xpos)	
-#plt.plot(E)
-#plt.show()
 
+
+
+system.plot_system()
+
+
+for step in range(500):
+        system.metropolis_step()
+        if step < burn_in_steps:
+                #print(f"Burn-in step {step + 1}/{burn_in_steps} - Energy: {system.total_energy}")
+                pass
+        else:
+                #print(f"Sampling step {step - burn_in_steps + 1} - Energy: {system.total_energy}")
+                sampled_energies.append(system.total_energy)
+
+system.plot_system()
+
+plt.plot(sampled_energies)
+plt.xlabel("Sampling Step")
+plt.ylabel("Total Energy")
+plt.title("Energy After Burn-In")
+plt.show()
 
             
