@@ -49,9 +49,7 @@ class System:
 			self.mean_orientation_list.append(np.mean(part_or_list))
 				
 	def compute_energy(self, alpha = 1, beta = 25):
-		"""
-		COmpute energy at current step
-		"""
+		#Compute energy at current step
 		self.total_energy = 0
 		for i in self.particles:
 			for j in self.particles:
@@ -62,9 +60,7 @@ class System:
 		return self.total_energy
 
 	def compute_new_energy(self, alpha = 1, beta = 25):
-		"""
-		Compute energy of proposed system
-		"""
+		#Compute energy of proposed system
 		self.new_total_energy = 0
 		for i in self.particles:
 			for j in self.particles:
@@ -75,9 +71,7 @@ class System:
 		return self.new_total_energy
 
 	def mcmc_proposal(self, position_step=2, orientation_step=2):
-		"""
-		proposed step for each particle position and orientation
-		"""
+		#Proposed step for each particle position and orientation
 		prior_energy = self.compute_energy()
 		for part in self.particles:
 			if np.random.rand() < 1:
@@ -91,10 +85,8 @@ class System:
 				part.new_orientation = (part.new_orientation + np.pi) % (2 * np.pi)				
 	
 	def metropolis_step(self):
-		"""
-		Taking one Metropolis Hastings step
-		Use prposed energy to determine whether to take step
-		"""
+		#Taking one Metropolis Hastings step
+		#Use prposed energy to determine whether to take step
 		self.mcmc_proposal()
 		prior_energy = self.compute_energy()
 		prop_energy = self.compute_new_energy()
@@ -130,9 +122,7 @@ class System:
 		return E_list, part_list
 					
 	def plot_system(self):
-		"""
-		Plotting system of N particles
-		"""
+		#Plotting system of N particles
 		plt.figure(figsize= (6,6))
 		plt.xlim(0,self.length)
 		plt.ylim(0, self.length)
@@ -150,34 +140,26 @@ class System:
 		plt.show()
 			
 	def compute_prior(self, particle):
-		"""
-		Compute the prior probability for a particle's position and orientation.
-		Example: Gaussian prior on positions centered in the box.
-		"""
+		#Compute the prior probability for a particle's position and orientation
 		pos_prior = np.exp(-np.sum((particle.position - self.length / 2) ** 2) / (2 * (self.length / 4) ** 2))
 		orientation_prior = 1  # Uniform prior on orientation (default)
 		return pos_prior * orientation_prior
 
 	def compute_likelihood(self):
-        #"""
-        #Compute likelihood using energy as a proxy.
-        #Lower energy corresponds to higher likelihood.
-        #"""
+        #Compute likelihood using energy, lower energy configs have higher liklihood
 		energy = self.compute_energy()
 		return -energy / self.temp
 
 	def compute_system_prior(self, particles):
-    # Example: Prior based on the spread of particles
+		#Computing the prior for the system/configm, based on the spread of particles
 		positions = [p.position for p in particles]
 		mean_position = np.mean(positions, axis=0)
 		spread = np.sum([np.linalg.norm(p.position - mean_position) for p in particles])
-    # Smaller spread is better, so we return a Gaussian-like prior
+		#Using Gaussian dist because we want a smaller spread (want things clumped together
 		return -spread
 
 	def metropolis_step_with_prior(self):
-		"""
-		Taking one Metropolis-Hastings step with priors.
-		"""
+		#Metropolis-Hastings step with priors
 		prior_old = self.compute_system_prior(self.particles)
 		likelihood_old = self.compute_likelihood()
 		
@@ -189,7 +171,7 @@ class System:
 		prior_new = self.compute_system_prior(self.particles)
 		likelihood_new = self.compute_likelihood()
 
-		# Adjust delta_e to include priors
+		#Want energy change to include priors
 		delta_e = (prop_energy - prior_energy) + (prior_new - prior_old)
 
 		if delta_e < 0 or np.random.rand() < np.exp(-delta_e / self.temp):
@@ -204,9 +186,7 @@ class System:
 
 
 	def run_mcmc_with_prior(self, iterations, burn_in_fraction=0.2):
-        #"""
-        #Run MCMC with priors for a number of iterations.
-        #"""
+        #Run MCMC with priors for a number of iterations
 		burn_in = int(iterations * burn_in_fraction)
 		acceptance = 0
 		energy_list = []
@@ -244,6 +224,7 @@ class System:
 		plt.show()
 
 	def autocorrelation_length(self, param):
+		#Finding autocorrelation, will tell us about convergence
 		param = np.array(param)
 		n = len(param)
 		lag = n // 2
@@ -262,7 +243,8 @@ class System:
 		return autocorrelation_len, autocorr
 
 
-# Example usage
+#Acutally running full sim:
+
 system = System(length=10, part_num=100, temp=0.1)
 
 system.plot_system_with_prior()
