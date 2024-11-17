@@ -96,12 +96,12 @@ class System:
 			for i in self.particles:
 				i.position = i.new_pos
 				i.orientation = i.new_orientation
-				i.orientation_list.append(i.new_orientation)
-				i.position_list.append(i.new_pos)
 			return True
-		else:
-#			print("nah fam")
+		else: 
 			return False
+		i.orientation_list.append(i.new_orientation)
+		i.position_list.append(i.new_pos)
+
 
 	def run_mcmc(self, iterations, burn_in_fraction =0.2):
 		
@@ -182,9 +182,12 @@ class System:
 				i.position_list.append(i.position)
 			return True
 		else:
+			for i in self.particles:
+				i.orientation_list.append(i.orientation)
+				i.position_list.append(i.position)	
 			return False
-
-
+		
+			
 	def run_mcmc_with_prior(self, iterations, burn_in_fraction=0.2):
         #Run MCMC with priors for a number of iterations
 		burn_in = int(iterations * burn_in_fraction)
@@ -248,7 +251,7 @@ class System:
 system = System(length=10, part_num=100, temp=0.1)
 
 system.plot_system_with_prior()
-E,p = system.run_mcmc_with_prior(100000)
+E,p = system.run_mcmc_with_prior(10000)
 system.plot_system_with_prior()
 auto_len, auto = system.autocorrelation_length(E)
 print(auto_len)
