@@ -10,7 +10,7 @@ dependencies = [
    "matplotlib",
 ]
 authors = [
-  { name="Luis Rufino", email="bmaves@gmail.com" },
+  { name="Benjamin Maves", email="bmaves@gmail.com" },
   { name="Julia Rice", email="jrrice@syr.edu" },
 ]
 description = "Package for Project 3"
@@ -23,5 +23,8 @@ classifiers = [
 ]
 license = {file = "LICENSE"}
 
+[project.urls]
+Homepage = "https://github.com/jrrice5908/Phy607_Project3.git"
+
 [project.scripts]
-run_mc_sim = "PHY607_Project3:main.sh"
+run_mcmc = "PHY607_Project3:main.sh"
