@@ -196,8 +196,8 @@ class System:
 			for i in self.particles:
 				i.position = i.new_pos
 				i.orientation = i.new_orientation
-				i.orientation_list.append(i.new_orientation)
-				i.position_list.append(i.new_pos)
+				i.orientation_list.append(i.orientation)
+				i.position_list.append(i.position)
 			return True
 		else:
 			return False
@@ -210,14 +210,14 @@ class System:
 		burn_in = int(iterations * burn_in_fraction)
 		acceptance = 0
 		energy_list = []
-
+		part_list = []
 		for i in range(iterations):
 			if self.metropolis_step_with_prior():
 				acceptance += 1
 			energy_list.append(self.total_energy)
-
+			part_list.append(self.particles)
 		print(f"Acceptance rate: {acceptance / iterations:.2%}")
-		return energy_list
+		return energy_list, part_list
 
 	def plot_system_with_prior(system):
         
@@ -243,11 +243,39 @@ class System:
 		plt.gca().set_aspect('equal', adjustable='box')
 		plt.show()
 
+	def autocorrelation_length(self, param):
+		param = np.array(param)
+		n = len(param)
+		lag = n // 2
+		
+		mean = np.mean(param)
+		var = np.var(param)
+	
+
+		autocorr = []
+		for i in range(lag):
+			corr = np.sum((param[:n-lag] - mean) * (param[lag:] - mean)) / var / (n - lag)
+			autocorr.append(corr)
+	
+		autocorrelation_len = 1 + 2 * np.sum(np.array(autocorr)[:1])
+
+		return autocorrelation_len, autocorr
+
+
 # Example usage
 system = System(length=10, part_num=100, temp=0.1)
 
 system.plot_system_with_prior()
-system.run_mcmc_with_prior(500)
+E,p = system.run_mcmc_with_prior(100000)
 system.plot_system_with_prior()
+auto_len, auto = system.autocorrelation_length(E)
+print(auto_len)
+plt.plot(system.particles[0].position_list)
+plt.plot(system.particles[0].orientation_list)
+plt.show()
 
-            
+plt.plot(E)
+plt.show()
+
+plt.plot(auto)
+plt.show()
