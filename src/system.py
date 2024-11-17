@@ -155,8 +155,8 @@ burn_in_steps = 100  # burn-in period
 sampled_energies = []  # Store energies after burn-in                   
 
 system = System(10, 100,0.1)
-#system.plot_system()
-E, p = system.run_mcmc(100)
+system.plot_system()
+E, p = system.run_mcmc(100000)
 
 xpos = []
 ypos = []
